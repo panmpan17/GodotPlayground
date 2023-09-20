@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://d04ayi2dlxd0t"]
+
+[ext_resource type="PackedScene" uid="uid://df8080bst8p76" path="res://Tiles/tile_map.tscn" id="1_r8a7d"]
+[ext_resource type="PackedScene" uid="uid://dkbopw2tpx4sj" path="res://Prefabs/SnakeHead.tscn" id="2_lmit5"]
+
+[node name="Game" type="Node2D"]
+
+[node name="TileMap" parent="." instance=ExtResource("1_r8a7d")]
+
+[node name="SnakeHead" parent="." instance=ExtResource("2_lmit5")]
+position = Vector2(80, 176)

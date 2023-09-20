@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://dlfof5jnt68ud"]
+
+[ext_resource type="Texture2D" uid="uid://bdwv5xirykkbk" path="res://icon.svg" id="1_g4gfs"]
+
+[node name="SnakeBody" type="Sprite2D"]
+modulate = Color(0.545098, 0.356863, 0.815686, 1)
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("1_g4gfs")
