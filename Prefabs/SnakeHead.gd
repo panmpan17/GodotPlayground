@@ -5,6 +5,10 @@ const RightRotationDegree = 90
 const DownRotationeDegree = 180
 const LeftRotationDegree = 270
 
+signal dead
+
+@export
+var t : Node2D
 
 @export
 var moveSpeed := 5.0
@@ -29,6 +33,8 @@ var rotationDegree: float = RightRotationDegree
 var bodies : Array = []
 
 var isDead : bool = false
+
+var spawnNewBody : bool = false
 #var t : Node2D 
 
 
@@ -38,21 +44,7 @@ func _ready():
 	var newBody = bodyPrefab.instantiate()
 	add_child(newBody)
 	bodies.append(newBody)
-		
-#	newBody.global_position.x = rigidbody2d.global_position.x - bodySpacing
 	newBody.global_position.x = global_position.x - bodySpacing
-
-
-func move_towards(current_position: Vector2, target_position: Vector2, max_distance: float) -> Vector2:
-	var _direction = target_position - current_position
-	var distance = _direction.length()
-
-	if distance <= max_distance:
-		return target_position
-
-	# Calculate the new position
-	var new_position = current_position + _direction.normalized() * max_distance
-	return new_position
 
 
 func _process(delta):
@@ -68,7 +60,7 @@ func _process(delta):
 		return
 
 	if newDirection != direction:
-		rotation_degrees = rotationDegree
+		t.rotation_degrees = rotationDegree
 		direction = newDirection
 
 	UpdateBodyPosition();
@@ -101,17 +93,42 @@ func ListenInput():
 
 
 func UpdateBodyPosition():
-	var lastPosition = global_position
-	global_position = global_position + (direction * bodySpacing)
-	
-	var tempPosition : Vector2
+	var lastPositions : Array = [t.global_position]
+
 	for body in bodies:
-		tempPosition = body.global_position
-		body.global_position = lastPosition
-		lastPosition = tempPosition
+		lastPositions.append(body.global_position)
+	
+	t.global_position += (direction * bodySpacing)
+	
+	for i in bodies.size():
+		bodies[i].global_position = lastPositions[i]
+	
+	if spawnNewBody:
+		spawnNewBody = false
+
+		print("Grow")
+		var newBody = bodyPrefab.instantiate()
+		add_child(newBody)
+		bodies.append(newBody)
+
+		newBody.global_position = lastPositions[lastPositions.size() - 1]
 
 
 func _on_area_2d_body_entered(body):
 	if body.is_in_group("Ground"):
-		isDead = true
+		HandleDeath()
 		return
+
+
+func _on_area_2d_area_entered(area):
+	if area.is_in_group("Candy"):
+		spawnNewBody = true
+		return
+
+	if area.is_in_group("Body"):
+		HandleDeath()
+		return
+
+func HandleDeath():
+	isDead = true
+	dead.emit()

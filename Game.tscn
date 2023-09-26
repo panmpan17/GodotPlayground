@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://d04ayi2dlxd0t"]
+[gd_scene load_steps=4 format=3 uid="uid://d04ayi2dlxd0t"]
 
 [ext_resource type="PackedScene" uid="uid://df8080bst8p76" path="res://Tiles/tile_map.tscn" id="1_r8a7d"]
 [ext_resource type="PackedScene" uid="uid://dkbopw2tpx4sj" path="res://Prefabs/SnakeHead.tscn" id="2_lmit5"]
+[ext_resource type="PackedScene" uid="uid://bd1y868ffnbnb" path="res://Prefabs/Candy.tscn" id="3_v7hab"]
 
 [node name="Game" type="Node2D"]
 
@@ -9,3 +10,6 @@
 
 [node name="SnakeHead" parent="." instance=ExtResource("2_lmit5")]
 position = Vector2(80, 176)
+
+[node name="Candy" parent="." instance=ExtResource("3_v7hab")]
+position = Vector2(170, 178)
