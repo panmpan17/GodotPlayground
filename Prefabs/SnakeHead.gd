@@ -5,6 +5,7 @@ const RightRotationDegree = 90
 const DownRotationeDegree = 180
 const LeftRotationDegree = 270
 
+signal eat_candy
 signal dead
 
 @export
@@ -23,6 +24,13 @@ var timer = 0
 @export
 var bodySpacing  := 32.0
 
+@export
+var audioPlayer : AudioStreamPlayer
+
+@export var turnSound : AudioStream
+@export var pickupSound : AudioStream
+@export var hitWallSound : AudioStream
+
 var bodyPrefab : PackedScene
 
 
@@ -37,14 +45,18 @@ var isDead : bool = false
 var spawnNewBody : bool = false
 #var t : Node2D 
 
+var originalPosition : Vector2 = Vector2(0, 0)
+
 
 func _ready():
 	bodyPrefab = preload("res://Prefabs/SnakeBody.tscn")
-	
+
 	var newBody = bodyPrefab.instantiate()
 	add_child(newBody)
 	bodies.append(newBody)
 	newBody.global_position.x = global_position.x - bodySpacing
+
+	originalPosition = t.global_position
 
 
 func _process(delta):
@@ -62,6 +74,9 @@ func _process(delta):
 	if newDirection != direction:
 		t.rotation_degrees = rotationDegree
 		direction = newDirection
+
+		audioPlayer.stream = turnSound
+		audioPlayer.play()
 
 	UpdateBodyPosition();
 
@@ -106,7 +121,6 @@ func UpdateBodyPosition():
 	if spawnNewBody:
 		spawnNewBody = false
 
-		print("Grow")
 		var newBody = bodyPrefab.instantiate()
 		add_child(newBody)
 		bodies.append(newBody)
@@ -123,6 +137,10 @@ func _on_area_2d_body_entered(body):
 func _on_area_2d_area_entered(area):
 	if area.is_in_group("Candy"):
 		spawnNewBody = true
+		eat_candy.emit()
+		
+		audioPlayer.stream = pickupSound
+		audioPlayer.play()
 		return
 
 	if area.is_in_group("Body"):
@@ -132,3 +150,26 @@ func _on_area_2d_area_entered(area):
 func HandleDeath():
 	isDead = true
 	dead.emit()
+	
+	audioPlayer.stream = hitWallSound
+	audioPlayer.play()
+
+func HandleRevive():
+	isDead = false
+	timer = 0
+	
+	direction = Vector2(1, 0)
+	newDirection = Vector2(1, 0)
+	t.rotation_degrees = RightRotationDegree
+	rotationDegree = RightRotationDegree
+
+	t.global_position = originalPosition
+	
+	for body in bodies:
+		body.queue_free()
+	bodies.clear()
+
+	var newBody = bodyPrefab.instantiate()
+	add_child(newBody)
+	bodies.append(newBody)
+	newBody.global_position.x = global_position.x - bodySpacing

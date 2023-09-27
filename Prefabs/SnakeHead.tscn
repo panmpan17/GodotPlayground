@@ -1,16 +1,23 @@
-[gd_scene load_steps=5 format=3 uid="uid://dkbopw2tpx4sj"]
+[gd_scene load_steps=8 format=3 uid="uid://dkbopw2tpx4sj"]
 
 [ext_resource type="Script" path="res://Prefabs/SnakeHead.gd" id="1_law04"]
 [ext_resource type="Texture2D" uid="uid://bdwv5xirykkbk" path="res://icon.svg" id="1_q2fuk"]
+[ext_resource type="AudioStream" uid="uid://b31uokacwvj2y" path="res://Audios/jump.wav" id="2_rsht2"]
 [ext_resource type="Script" path="res://Prefabs/Area2DObserver.gd" id="3_vujju"]
+[ext_resource type="AudioStream" uid="uid://u2f205m7mm6r" path="res://Audios/hitHurt.wav" id="4_inler"]
+[ext_resource type="AudioStream" uid="uid://1q7nmwrp5ewx" path="res://Audios/pickupCoin.wav" id="4_j3py1"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_cutec"]
 size = Vector2(32, 32)
 
-[node name="SnakeHead" type="Node2D" node_paths=PackedStringArray("t")]
+[node name="SnakeHead" type="Node2D" node_paths=PackedStringArray("t", "audioPlayer")]
 script = ExtResource("1_law04")
 t = NodePath("Area2D")
-timeForward = 0.25
+timeForward = 0.18
+audioPlayer = NodePath("PickUpCandy")
+turnSound = ExtResource("2_rsht2")
+pickupSound = ExtResource("4_j3py1")
+hitWallSound = ExtResource("4_inler")
 
 [node name="Area2D" type="Area2D" parent="."]
 script = ExtResource("3_vujju")
@@ -23,6 +30,9 @@ shape = SubResource("RectangleShape2D_cutec")
 z_index = 1
 scale = Vector2(0.25, 0.25)
 texture = ExtResource("1_q2fuk")
+
+[node name="PickUpCandy" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4_j3py1")
 
 [connection signal="area_entered" from="Area2D" to="." method="_on_area_2d_area_entered"]
 [connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
